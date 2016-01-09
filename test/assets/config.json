@@ -1,0 +1,12 @@
+{
+  "metron": {
+    "endpoint": "endpoint",
+    "origin": "origin"
+  },
+  "frequency": "1s",
+  "ip_filter": ["1.2.3.4", "5.6.7.8"],
+  "aliases": {
+    "1.2.3.4": "one",
+    "5.6.7.8": "two"
+  }
+}
