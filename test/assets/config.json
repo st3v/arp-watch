@@ -1,12 +1,15 @@
 {
   "metron": {
-    "endpoint": "endpoint",
-    "origin": "origin"
+    "endpoint": "localhost:3457",
+    "origin": "node-1"
   },
   "frequency": "1s",
-  "ip_filter": ["1.2.3.4", "5.6.7.8"],
+  "filters": [
+    "192.168.0.1", 
+    "192.168.0.2" 
+  ],
   "aliases": {
-    "1.2.3.4": "one",
-    "5.6.7.8": "two"
+    "192.168.0.1": "host-1", 
+    "192.168.0.2": "host-2"
   }
 }

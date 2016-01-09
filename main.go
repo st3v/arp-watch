@@ -94,7 +94,7 @@ func getKey(event observer.AddressChange) string {
 }
 
 func getName(event observer.AddressChange) string {
-	return strings.Replace(event.Name, ".", "_", -1)
+	return strings.Replace(event.Name, ".", "-", -1)
 }
 
 func emitMetric(event observer.AddressChange) {

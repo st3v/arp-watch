@@ -13,8 +13,8 @@ type MetronConfig struct {
 type Config struct {
 	Metron    MetronConfig      `json:"metron,omitempty"`
 	Frequency string            `json:"frequency"`
-	Filter    []string          `json:"ip_filter"`
-	Alias     map[string]string `json:"aliases"`
+	Filters   []string          `json:"filters"`
+	Aliases   map[string]string `json:"aliases"`
 }
 
 func (c *Config) Load(path string) error {

@@ -17,12 +17,12 @@ func Observe(config Config, state *State, events chan AddressChange) error {
 	defer close(events)
 
 	filters := map[string]interface{}{}
-	for _, ip := range config.Filter {
+	for _, ip := range config.Filters {
 		filters[ip] = nil
 	}
 
 	if config.Frequency == "" {
-		*state = detectChanges(filters, *state, config.Alias, events)
+		*state = detectChanges(filters, *state, config.Aliases, events)
 	}
 
 	frequency, err := time.ParseDuration(config.Frequency)
@@ -31,7 +31,7 @@ func Observe(config Config, state *State, events chan AddressChange) error {
 	}
 
 	for {
-		*state = detectChanges(filters, *state, config.Alias, events)
+		*state = detectChanges(filters, *state, config.Aliases, events)
 		<-time.After(frequency)
 	}
 

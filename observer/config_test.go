@@ -28,13 +28,13 @@ var _ = Describe("Config", func() {
 
 		It("returns the expected config", func() {
 			actual.Load(configPath)
-			Expect(actual.Metron.Endpoint).To(Equal("endpoint"))
-			Expect(actual.Metron.Origin).To(Equal("origin"))
+			Expect(actual.Metron.Endpoint).To(Equal("localhost:3457"))
+			Expect(actual.Metron.Origin).To(Equal("node-1"))
 			Expect(actual.Frequency).To(Equal("1s"))
-			Expect(actual.Filter).To(Equal([]string{"1.2.3.4", "5.6.7.8"}))
-			Expect(actual.Alias).To(Equal(map[string]string{
-				"1.2.3.4": "one",
-				"5.6.7.8": "two",
+			Expect(actual.Filters).To(Equal([]string{"192.168.0.1", "192.168.0.2"}))
+			Expect(actual.Aliases).To(Equal(map[string]string{
+				"192.168.0.1": "host-1",
+				"192.168.0.2": "host-2",
 			}))
 		})
 
