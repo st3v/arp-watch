@@ -91,11 +91,11 @@ func getAction(event observer.AddressChange) string {
 	return action
 }
 
-func getKey(event observer.AddressChange) string {
+func getKey(event observer.AddressChange, action string) string {
 	return fmt.Sprintf(
 		"net.arp.%s.%s",
 		getName(event),
-		getAction(event),
+		action,
 	)
 }
 
@@ -104,11 +104,16 @@ func getName(event observer.AddressChange) string {
 }
 
 func emitMetric(event observer.AddressChange) {
-	metrics.SendValue(getKey(event), 1, "count")
+	if event.New == "" {
+		return
+	}
+
+	key := getKey(event, "changed")
+	metrics.SendValue(key, 1, "count")
 }
 
 func logEvent(event observer.AddressChange) {
-	infoLog.Printf("%s: '%s' -> '%s'\n", getKey(event), event.Old, event.New)
+	infoLog.Printf("%s: '%s' -> '%s'\n", getKey(event, getAction(event)), event.Old, event.New)
 }
 
 func handleObservations(handleFn func(event observer.AddressChange), events chan observer.AddressChange, done chan struct{}) {
