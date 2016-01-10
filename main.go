@@ -17,11 +17,17 @@ import (
 var (
 	config *observer.Config
 	state  *observer.State
+
+	infoLog *log.Logger
+	errLog  *log.Logger
 )
 
-func main() {
-	log.SetFlags(0)
+func init() {
+	infoLog = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
+	errLog = log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+}
 
+func main() {
 	configPath := flag.String("configPath", "", "Path to config file. Optional.")
 	stateFilePath := flag.String("stateFilePath", "", "Path to state file. Optional.")
 	flag.Parse()
@@ -29,7 +35,7 @@ func main() {
 	config = new(observer.Config)
 	if *configPath != "" {
 		if err := config.Load(*configPath); err != nil {
-			log.Fatalf("Error loading config file: %s", err.Error())
+			errLog.Fatalf("Error loading config file: %s", err.Error())
 		}
 	}
 
@@ -40,7 +46,7 @@ func main() {
 		}
 
 		if err := state.Load(*stateFilePath); err != nil {
-			log.Fatalf("Error loading state file: %s", err.Error())
+			errLog.Fatalf("Error loading state file: %s", err.Error())
 		}
 
 		setupExitHandler(*stateFilePath)
@@ -48,19 +54,19 @@ func main() {
 		defer state.Write(*stateFilePath)
 	}
 
-	handleFn := printEvent
+	handleFn := logEvent
 	if config.Metron.Endpoint != "" && config.Metron.Origin != "" {
 		err := dropsonde.Initialize(
 			config.Metron.Endpoint,
 			config.Metron.Origin,
 		)
 		if err != nil {
-			log.Fatalf("Dropsonde failed to initialize", err)
+			errLog.Fatalf("Dropsonde failed to initialize", err)
 		}
 
 		handleFn = func(event observer.AddressChange) {
 			emitMetric(event)
-			printEvent(event)
+			logEvent(event)
 		}
 	}
 
@@ -101,8 +107,8 @@ func emitMetric(event observer.AddressChange) {
 	metrics.SendValue(getKey(event), 1, "count")
 }
 
-func printEvent(event observer.AddressChange) {
-	fmt.Printf("%s: '%s' -> '%s'\n", getKey(event), event.Old, event.New)
+func logEvent(event observer.AddressChange) {
+	infoLog.Printf("%s: '%s' -> '%s'\n", getKey(event), event.Old, event.New)
 }
 
 func handleObservations(handleFn func(event observer.AddressChange), events chan observer.AddressChange, done chan struct{}) {
